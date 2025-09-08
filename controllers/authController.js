@@ -40,7 +40,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ error: 'User already exists' });
+      throw new ApiError(400, "User already exists")
     }
     const user = await User.create({ name, email, password });
       const createdUser = await User.findById(user._id).select("-password -refreshToken")
@@ -50,7 +50,7 @@ export const registerUser = asyncHandler(async (req, res) => {
       }
       
       return res.status(201).json(
-        new ApiResponse(200, createdUser, "User registered succesfully")
+        new ApiResponse(201, createdUser, "User registered successfully")
     )
     // res.status(201).json({
     //   _id: user._id,
@@ -70,6 +70,10 @@ export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
     if(!email){
     throw new ApiError(400, "email is required")
+  }
+  
+    if(!password){
+    throw new ApiError(400, "password is required")
   }
   
     let user = await User.findOne({ email });
